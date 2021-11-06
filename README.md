@@ -49,9 +49,8 @@ npm install @aws-cdk/aws-iam
 # Deploy
 
 ```
-cdk deploy MctcVpcStack 
-cdk deploy MctcEc2Stack
-cdk deploy MctcEcsSimpleStack
+cdk deploy mctcVpcStack 
+cdk deploy mctcVpcFargateAlone
 ```
 
 # Attention
@@ -59,10 +58,3 @@ cdk deploy MctcEcsSimpleStack
 If you deploy first a Vpc, then Fargate, then you destroy both, next time you have to clear the context by issueing:
 
     cdk context  --clear 
-
-# Useful commands
-
-* `dotnet build src` compile this app
-* `cdk deploy`       deploy this stack to your default AWS account/region
-* `cdk diff`         compare deployed stack with current state
-* `cdk synth`        emits the synthesized CloudFormation template
