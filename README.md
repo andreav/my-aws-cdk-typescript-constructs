@@ -1,14 +1,62 @@
-# Welcome to your CDK TypeScript project!
+# Setup Development environment
 
-This is a blank project for TypeScript development with CDK.
+- OS: Ubuntu 20.04
+* Installing node
+    ```
+    curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+    sudo apt install -y nodejs
+    node -v
+    sudo apt install npm
+    npm  -v
+    ```
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+* Installing aws cli
+  ```
+   curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+   unzip awscliv2.zip
+   sudo ./aws/install
+   ```
 
-## Useful commands
+- Configure aws cli
+  ```
+  aws configure
+  ```
 
- * `npm run build`   compile typescript to js
- * `npm run watch`   watch for changes and compile
- * `npm run test`    perform the jest unit tests
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk synth`       emits the synthesized CloudFormation template
+- Testing aws cli
+  ```
+  aws sts get-caller-identity
+  ```
+
+* Installing CDK 
+  ```
+  sudo npm install -g aws-cdk
+  cdk doctor
+  ```
+
+# Creating an example project
+
+```
+mkdir my-cdk-ts-constructs
+cd my-cdk-ts-constructs
+
+cdk init app --language typescript
+
+npm install @aws-cdk/aws-ec2
+npm install @aws-cdk/aws-ecs
+npm install @aws-cdk/aws-iam
+```
+
+# Deploy
+
+```
+cdk deploy MctcVpcStack 
+cdk deploy MctcEc2Stack
+cdk deploy MctcEcsSimpleStack
+```
+
+# Useful commands
+
+* `dotnet build src` compile this app
+* `cdk deploy`       deploy this stack to your default AWS account/region
+* `cdk diff`         compare deployed stack with current state
+* `cdk synth`        emits the synthesized CloudFormation template
