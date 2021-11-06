@@ -54,6 +54,12 @@ cdk deploy MctcEc2Stack
 cdk deploy MctcEcsSimpleStack
 ```
 
+# Attention
+
+If you deploy first a Vpc, then Fargate, then you destroy both, next time you have to clear the context by issueing:
+
+    cdk context  --clear 
+
 # Useful commands
 
 * `dotnet build src` compile this app
