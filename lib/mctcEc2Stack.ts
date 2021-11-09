@@ -79,7 +79,7 @@ export class mctcEc2Stack extends cdk.Stack {
 
         if (props?.sshKeyPairName) {
             new cdk.CfnOutput(this, 'Key Name', { value: props.sshKeyPairName })
-            new cdk.CfnOutput(this, 'ssh command', { value: 'ssh -i cdk-key.pem -o IdentitiesOnly=yes ec2-user@' + IPAddr })
+            new cdk.CfnOutput(this, 'ssh command', { value: `ssh -i ${props.sshKeyPairName}.pem -o IdentitiesOnly=yes ec2-user@${IPAddr}` })
         }
     }
 }
