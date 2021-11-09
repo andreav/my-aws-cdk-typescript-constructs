@@ -2,15 +2,18 @@ import * as cdk from '@aws-cdk/core';
 import * as ec2 from "@aws-cdk/aws-ec2";
 import * as ecs from "@aws-cdk/aws-ecs";
 import { getOrCreateVpc } from './utils';
+import { SubnetType } from '@aws-cdk/aws-ec2';
 
-export interface mctcFargatePublicProps extends cdk.StackProps {
+export interface mctcFargateStackProps extends cdk.StackProps {
   vpcName?: string;
+
+  subnetType: ec2.SubnetType;
 }
 
-export class mctcFargatePublicStack extends cdk.Stack {
+export class mctcFargateStack extends cdk.Stack {
   private vpc: ec2.IVpc;
 
-  constructor(scope: cdk.Construct, id: string, props?: mctcFargatePublicProps) {
+  constructor(scope: cdk.Construct, id: string, props?: mctcFargateStackProps) {
     super(scope, id, props);
 
     this.vpc = getOrCreateVpc(this, props?.vpcName)
@@ -43,11 +46,10 @@ export class mctcFargatePublicStack extends cdk.Stack {
 
     serviceSecGrp.connections.allowFromAnyIpv4(ec2.Port.tcp(80));
 
-
     const service = new ecs.FargateService(this, "Service", {
       cluster: cluster,
       taskDefinition,
-      assignPublicIp: true,
+      assignPublicIp: props?.subnetType == SubnetType.PUBLIC ? true : false,
       securityGroups: [serviceSecGrp]
     });
   }

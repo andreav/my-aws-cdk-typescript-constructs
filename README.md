@@ -60,6 +60,10 @@ npm install @aws-cdk/aws-iam
 
       ssh -i my-ssh-key.pem -o IdentitiesOnly=yes ec2-user@<ec2PublicIp>
   
+* mctcEc2PrivateStack
+
+  An EC2 instance in the private subnet
+
 
 * mctcFargatePublicStack
   
@@ -76,7 +80,8 @@ Useful for internal sage (i.e. accessing the container only by a VPN)
 
 ```
 cdk deploy mctcVpcStack 
-cdk deploy mctcEc2PublicStack 
+cdk deploy mctcEc2PublicStack
+cdk deploy mctcEc2PrivateStack
 cdk deploy mctcFargatePublicStack
 cdk deploy mctcFargatePrivateStack
 ```

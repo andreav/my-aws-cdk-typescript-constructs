@@ -6,8 +6,11 @@ import { Asset } from '@aws-cdk/aws-s3-assets';
 import { getOrCreateVpc } from "./utils";
 import { SubnetType } from "@aws-cdk/aws-ec2";
 
-export interface mctcEc2PublicStackProps extends cdk.StackProps {
+export interface mctcEc2StackProps extends cdk.StackProps {
+
     vpcName?: string;
+
+    subnetType: SubnetType;
 
     // Must be previuusly created from CLI
     sshKeyPairName?: string;
@@ -15,8 +18,8 @@ export interface mctcEc2PublicStackProps extends cdk.StackProps {
     userDataScriptPath?: string;
 }
 
-export class mctcEc2PublicStack extends cdk.Stack {
-    constructor(scope: cdk.Construct, id: string, props?: mctcEc2PublicStackProps) {
+export class mctcEc2Stack extends cdk.Stack {
+    constructor(scope: cdk.Construct, id: string, props?: mctcEc2StackProps) {
         super(scope, id, props);
 
         const vpc = getOrCreateVpc(this, props?.vpcName)
@@ -45,7 +48,7 @@ export class mctcEc2PublicStack extends cdk.Stack {
         const ec2Instance = new ec2.Instance(this, 'Instance', {
             vpc,
             vpcSubnets: {
-                subnetType: props?.sshKeyPairName ? SubnetType.PUBLIC : SubnetType.PRIVATE,
+                subnetType: props?.subnetType ?? SubnetType.PRIVATE_WITH_NAT,
             },
             instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
             machineImage: ami,
@@ -70,11 +73,13 @@ export class mctcEc2PublicStack extends cdk.Stack {
         }
 
         // Create outputs for connecting
-        new cdk.CfnOutput(this, 'IP Address', { value: ec2Instance.instancePublicIp });
+        const IPMsg = props?.subnetType == SubnetType.PUBLIC ? "Public" : "Private"
+        const IPAddr = props?.subnetType == SubnetType.PUBLIC ? ec2Instance.instancePublicIp : ec2Instance.instancePrivateIp
+        new cdk.CfnOutput(this, `IP Address ${IPMsg}`, { value: IPAddr });
 
         if (props?.sshKeyPairName) {
-            new cdk.CfnOutput(this, 'Key Name', { value: props?.sshKeyPairName ?? "No SSH Key" })
-            new cdk.CfnOutput(this, 'ssh command', { value: 'ssh -i cdk-key.pem -o IdentitiesOnly=yes ec2-user@' + ec2Instance.instancePublicIp })
+            new cdk.CfnOutput(this, 'Key Name', { value: props.sshKeyPairName })
+            new cdk.CfnOutput(this, 'ssh command', { value: 'ssh -i cdk-key.pem -o IdentitiesOnly=yes ec2-user@' + IPAddr })
         }
     }
 }
