@@ -46,11 +46,39 @@ npm install @aws-cdk/aws-ecs
 npm install @aws-cdk/aws-iam
 ```
 
+# Stacks from this project
+
+* mctcVpcStack
+
+  simply create a VPC across 2 AZ before launching other stacks (next stack will create faster)
+
+* mctcEc2PublicStack
+
+  An EC2 instance taken from  [here](https://github.dev/aws-samples/aws-cdk-examples)
+
+  Optionally create a KeyPair before deploying and connect through the command shown in the output of the stack.
+
+      ssh -i my-ssh-key.pem -o IdentitiesOnly=yes ec2-user@<ec2PublicIp>
+  
+
+* mctcFargatePublicStack
+  
+  One fargate container with public access.
+After deploy, you can reach the container on the public ip at port 80
+
+* mctcFargatePrivateStack
+
+   Same as before, but not reachable from the outside
+After deploy, you can reach the container on the prinvate ip at port 80
+Useful for internal sage (i.e. accessing the container only by a VPN)
+
 # Deploy
 
 ```
 cdk deploy mctcVpcStack 
-cdk deploy mctcVpcFargatePublic
+cdk deploy mctcEc2PublicStack 
+cdk deploy mctcFargatePublicStack
+cdk deploy mctcFargatePrivateStack
 ```
 
 # Attention

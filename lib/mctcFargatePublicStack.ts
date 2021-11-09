@@ -1,6 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import * as ec2 from "@aws-cdk/aws-ec2";
 import * as ecs from "@aws-cdk/aws-ecs";
+import { getOrCreateVpc } from './utils';
 
 export interface mctcFargatePublicProps extends cdk.StackProps {
   vpcName?: string;
@@ -12,14 +13,7 @@ export class mctcFargatePublicStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: mctcFargatePublicProps) {
     super(scope, id, props);
 
-    // get or create Vpc
-    if (props?.vpcName) {
-      this.vpc = ec2.Vpc.fromLookup(this, "Vpc", {
-        vpcName: props.vpcName
-      })
-    } else {
-      this.vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 2 });
-    }
+    this.vpc = getOrCreateVpc(this, props?.vpcName)
 
     // Cluster
     const cluster = new ecs.Cluster(this, 'Ec2Cluster', { vpc: this.vpc });
