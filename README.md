@@ -50,7 +50,7 @@ npm install @aws-cdk/aws-iam
 
 ```
 cdk deploy mctcVpcStack 
-cdk deploy mctcVpcFargateAlone
+cdk deploy mctcVpcFargatePublic
 ```
 
 # Attention

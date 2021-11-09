@@ -2,14 +2,14 @@ import * as cdk from '@aws-cdk/core';
 import * as ec2 from "@aws-cdk/aws-ec2";
 import * as ecs from "@aws-cdk/aws-ecs";
 
-export interface mctcFargateStandaloneProps extends cdk.StackProps {
+export interface mctcFargatePublicProps extends cdk.StackProps {
   vpcName?: string;
 }
 
-export class mctcVpcFargateAlone extends cdk.Stack {
+export class mctcFargatePublicStack extends cdk.Stack {
   private vpc: ec2.IVpc;
 
-  constructor(scope: cdk.Construct, id: string, props?: mctcFargateStandaloneProps) {
+  constructor(scope: cdk.Construct, id: string, props?: mctcFargatePublicProps) {
     super(scope, id, props);
 
     // get or create Vpc
