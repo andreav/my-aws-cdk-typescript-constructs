@@ -7,11 +7,19 @@ import { SubnetType } from '@aws-cdk/aws-ec2';
 export interface mctcFargateStackProps extends cdk.StackProps {
   vpcName?: string;
 
-  subnetType: ec2.SubnetType;
+  // Where to place Service
+  fargateServiceSubnetType: ec2.SubnetType;
+
+  desiredCount?: number;
 }
 
 export class mctcFargateStack extends cdk.Stack {
-  private vpc: ec2.IVpc;
+  protected vpc: ec2.IVpc;
+  protected cluster: ecs.Cluster;
+  protected taskDefinition: ecs.FargateTaskDefinition;
+  protected container: ecs.ContainerDefinition;
+  protected serviceSecGrp: ec2.SecurityGroup;
+  protected service: ecs.FargateService;
 
   constructor(scope: cdk.Construct, id: string, props?: mctcFargateStackProps) {
     super(scope, id, props);
@@ -19,22 +27,22 @@ export class mctcFargateStack extends cdk.Stack {
     this.vpc = getOrCreateVpc(this, props?.vpcName)
 
     // Cluster
-    const cluster = new ecs.Cluster(this, 'Ec2Cluster', { vpc: this.vpc });
+    this.cluster = new ecs.Cluster(this, 'Ec2Cluster', { vpc: this.vpc });
 
     // Standard ECS service setup
-    const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef');
-    const container = taskDefinition.addContainer('web', {
+    this.taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef');
+    this.container = this.taskDefinition.addContainer('web', {
       image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
       memoryLimitMiB: 256,
     });
 
-    container.addPortMappings({
+    this.container.addPortMappings({
       containerPort: 80,
       protocol: ecs.Protocol.TCP
     });
 
     //Security group ingress
-    const serviceSecGrp = new ec2.SecurityGroup(
+    this.serviceSecGrp = new ec2.SecurityGroup(
       this,
       `FargateAloneServiceSecurityGroup`,
       {
@@ -44,13 +52,14 @@ export class mctcFargateStack extends cdk.Stack {
       }
     );
 
-    serviceSecGrp.connections.allowFromAnyIpv4(ec2.Port.tcp(80));
+    this.serviceSecGrp.connections.allowFromAnyIpv4(ec2.Port.tcp(80));
 
-    const service = new ecs.FargateService(this, "Service", {
-      cluster: cluster,
-      taskDefinition,
-      assignPublicIp: props?.subnetType == SubnetType.PUBLIC ? true : false,
-      securityGroups: [serviceSecGrp]
+    this.service = new ecs.FargateService(this, "Service", {
+      cluster: this.cluster,
+      taskDefinition: this.taskDefinition,
+      assignPublicIp: props?.fargateServiceSubnetType == SubnetType.PUBLIC ? true : false,
+      securityGroups: [this.serviceSecGrp],
+      desiredCount: props?.desiredCount
     });
   }
 }

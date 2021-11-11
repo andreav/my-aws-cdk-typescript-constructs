@@ -16,3 +16,13 @@ To test it is working:
 1. curl <Task_pivate_ip>
 
 You will see the response from the server
+
+
+# TODOs
+
+- [ ] Add Volume on S3
+- [ ] Add CloudMap example
+- [ ] Add ECR example
+* Create a repository
+* Build an image
+* Push an image

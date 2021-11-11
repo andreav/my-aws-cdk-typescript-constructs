@@ -44,6 +44,7 @@ cdk init app --language typescript
 npm install @aws-cdk/aws-ec2
 npm install @aws-cdk/aws-ecs
 npm install @aws-cdk/aws-iam
+npm install @aws-cdk/aws-elasticloadbalancingv2
 ```
 
 # Stacks from this project
@@ -68,22 +69,44 @@ npm install @aws-cdk/aws-iam
 * mctcFargatePublicStack
   
   One fargate container with public access.
-After deploy, you can reach the container on the public ip at port 80
+  After deploy, you can reach the container on the public ip at port 80
 
 * mctcFargatePrivateStack
 
    Same as before, but not reachable from the outside
-After deploy, you can reach the container on the prinvate ip at port 80
-Useful for internal sage (i.e. accessing the container only by a VPN)
+  After deploy, you can reach the container on the prinvate ip at port 80
+  Useful for private usage (i.e. accessing the container only by a VPN)
+
+* mctcFargateAlbPublicStack
+  
+  Two fargate tasks accessed through ALB
+  Tasks run in private network, reachable only through ALB, they have only private IP
+  After deploy, you can reach the containers using the DNS name provided by the Alb
+
+* mctcFargateAlbPrivatetack
+  
+  Two fargate tasks accessed through ALB
+  Tasks and ALB run in private network
+  After deploy, you can reach the containers using the DNS name provided by the ALB but not from the outside
+  For instance you can deploy a private EC2 and test reachability through curl once logged in by ssh
 
 # Deploy
 
+You can deploy first the mctcVpcStack and then any of the other stack (for faster testing)
+
 ```
-cdk deploy mctcVpcStack 
+cdk deploy mctcVpcStack
+```
+
+```
 cdk deploy mctcEc2PublicStack
 cdk deploy mctcEc2PrivateStack
+
 cdk deploy mctcFargatePublicStack
 cdk deploy mctcFargatePrivateStack
+
+cdk deploy mctcFargateAlbPublicStack
+cdk deploy mctcFargateAlbPrivatetack
 ```
 
 # Attention

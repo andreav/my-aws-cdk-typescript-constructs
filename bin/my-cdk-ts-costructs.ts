@@ -6,6 +6,7 @@ import { mctcFargateStack } from '../lib/mctcFargateStack';
 import { mctcEc2Stack } from '../lib/mctcEc2Stack';
 import { Fn } from '@aws-cdk/core';
 import { SubnetType } from '@aws-cdk/aws-ec2';
+import { mctcFargateAlbStack } from '../lib/mctcFargateAlbStack';
 
 const app = new cdk.App();
 
@@ -30,11 +31,27 @@ new mctcEc2Stack(app, 'mctcEc2PrivateStack', {
 new mctcFargateStack(app, 'mctcFargatePublicStack', {
   env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
   vpcName: "mctcVpcStack/Vpc",
-  subnetType: SubnetType.PUBLIC
+  fargateServiceSubnetType: SubnetType.PUBLIC
 });
 
 new mctcFargateStack(app, 'mctcFargatePrivateStack', {
   env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
   vpcName: "mctcVpcStack/Vpc",
-  subnetType: SubnetType.PRIVATE_WITH_NAT
+  fargateServiceSubnetType: SubnetType.PRIVATE_WITH_NAT
+});
+
+new mctcFargateAlbStack(app, 'mctcFargateAlbPublicStack', {
+  env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+  vpcName: "mctcVpcStack/Vpc",
+  fargateServiceSubnetType: SubnetType.PRIVATE_WITH_NAT,
+  desiredCount: 2,
+  albSubnetType: SubnetType.PUBLIC
+});
+
+new mctcFargateAlbStack(app, 'mctcFargateAlbPrivatetack', {
+  env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+  vpcName: "mctcVpcStack/Vpc",
+  fargateServiceSubnetType: SubnetType.PRIVATE_WITH_NAT,
+  desiredCount: 2,
+  albSubnetType: SubnetType.PRIVATE_WITH_NAT
 });
