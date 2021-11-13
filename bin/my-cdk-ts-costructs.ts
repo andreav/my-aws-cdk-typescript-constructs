@@ -7,6 +7,7 @@ import { mctcEc2Stack } from '../lib/mctcEc2Stack';
 import { Fn } from '@aws-cdk/core';
 import { SubnetType } from '@aws-cdk/aws-ec2';
 import { mctcFargateAlbStack } from '../lib/mctcFargateAlbStack';
+import { mctcFargateEfsStack } from '../lib/mctcFargateEfsStack';
 
 const app = new cdk.App();
 
@@ -54,4 +55,12 @@ new mctcFargateAlbStack(app, 'mctcFargateAlbPrivatetack', {
   fargateServiceSubnetType: SubnetType.PRIVATE_WITH_NAT,
   desiredCount: 2,
   albSubnetType: SubnetType.PRIVATE_WITH_NAT
+});
+
+new mctcFargateEfsStack(app, 'mctcFargateEfsStack', {
+  env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+  vpcName: "mctcVpcStack/Vpc",
+  fargateServiceSubnetType: SubnetType.PUBLIC,
+  desiredCount: 2,
+  mountPath: "/mount-efs"
 });

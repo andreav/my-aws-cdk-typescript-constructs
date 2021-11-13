@@ -1,3 +1,89 @@
+# Stacks from this project
+
+* ## VPC - mctcVpcStack
+
+  simply create a VPC across 2 AZ before launching other stacks (next stack will create faster)
+
+* ## EC2 Public with SSH - mctcEc2PublicStack
+
+  An EC2 instance taken from  [here](https://github.dev/aws-samples/aws-cdk-examples)
+
+  Optionally create a KeyPair before deploying and connect through the command shown in the output of the stack.
+
+      ssh -i my-ssh-key.pem -o IdentitiesOnly=yes ec2-user@<ec2PublicIp>
+  
+* ## EC2 Private with SSH - mctcEc2PrivateStack
+
+  An EC2 instance in the private subnet
+
+
+* ## FARGATE Public - mctcFargatePublicStack
+  
+  One fargate container with public access.
+  After deploy, you can reach the container on the public ip at port 80
+
+* ## FARGATE Private - mctcFargatePrivateStack
+
+  Same as before, but not reachable from the outside  
+  After deploy, you can reach the container on the prinvate ip at port 80  
+  Useful for private usage (i.e. accessing the container only by a VPN)  
+  For instance you can deploy a public EC2 and test reachability through curl once logged in by ssh
+
+* ## ALB Public - mctcFargateAlbPublicStack
+  
+  Two fargate tasks accessed through ALB
+  Tasks run in private network, reachable only through ALB, they have only private IP
+  After deploy, you can reach the containers using the DNS name provided by the Alb
+
+* ## ALB Private - mctcFargateAlbPrivatetack
+  
+  Two fargate tasks accessed through ALB
+  Tasks and ALB run in private network  
+  After deploy, you can reach the containers using the DNS name provided by the ALB but not from the outside  
+  For instance you can deploy a public EC2 and test reachability through curl once logged in by ssh
+
+* ## EFS - mctcFargateEfsStack
+
+    Two fargate tasks accessed only throught public IP  (no ALB)
+    They both share same EFS volume mounted at /mount-efs
+    For testing purposes, ssh access is added to the container (both port mapping and related security group)
+    
+    * Connecting to port 22 of one replica
+    * touch a file under /mount-efs
+    * connect two second replica
+    * ls /moun-efs and see the file created on the other file
+
+
+
+
+# Deploy
+
+You can deploy first the mctcVpcStack and then any of the other stack (for faster testing)
+
+```
+cdk deploy mctcVpcStack
+```
+
+```
+cdk deploy mctcEc2PublicStack
+cdk deploy mctcEc2PrivateStack
+
+cdk deploy mctcFargatePublicStack
+cdk deploy mctcFargatePrivateStack
+
+cdk deploy mctcFargateAlbPublicStack
+cdk deploy mctcFargateAlbPrivatetack
+
+cdk deploy mctcFargateEfsStack
+```
+
+# Attention
+
+If you deploy first a Vpc, then Fargate, then you destroy both, next time you have to clear the context by issueing:
+
+    cdk context  --clear 
+
+
 # Setup Development environment
 
 - OS: Ubuntu 20.04
@@ -45,72 +131,6 @@ npm install @aws-cdk/aws-ec2
 npm install @aws-cdk/aws-ecs
 npm install @aws-cdk/aws-iam
 npm install @aws-cdk/aws-elasticloadbalancingv2
+npm install @aws-cdk/aws-efs
 ```
 
-# Stacks from this project
-
-* mctcVpcStack
-
-  simply create a VPC across 2 AZ before launching other stacks (next stack will create faster)
-
-* mctcEc2PublicStack
-
-  An EC2 instance taken from  [here](https://github.dev/aws-samples/aws-cdk-examples)
-
-  Optionally create a KeyPair before deploying and connect through the command shown in the output of the stack.
-
-      ssh -i my-ssh-key.pem -o IdentitiesOnly=yes ec2-user@<ec2PublicIp>
-  
-* mctcEc2PrivateStack
-
-  An EC2 instance in the private subnet
-
-
-* mctcFargatePublicStack
-  
-  One fargate container with public access.
-  After deploy, you can reach the container on the public ip at port 80
-
-* mctcFargatePrivateStack
-
-   Same as before, but not reachable from the outside
-  After deploy, you can reach the container on the prinvate ip at port 80
-  Useful for private usage (i.e. accessing the container only by a VPN)
-
-* mctcFargateAlbPublicStack
-  
-  Two fargate tasks accessed through ALB
-  Tasks run in private network, reachable only through ALB, they have only private IP
-  After deploy, you can reach the containers using the DNS name provided by the Alb
-
-* mctcFargateAlbPrivatetack
-  
-  Two fargate tasks accessed through ALB
-  Tasks and ALB run in private network
-  After deploy, you can reach the containers using the DNS name provided by the ALB but not from the outside
-  For instance you can deploy a private EC2 and test reachability through curl once logged in by ssh
-
-# Deploy
-
-You can deploy first the mctcVpcStack and then any of the other stack (for faster testing)
-
-```
-cdk deploy mctcVpcStack
-```
-
-```
-cdk deploy mctcEc2PublicStack
-cdk deploy mctcEc2PrivateStack
-
-cdk deploy mctcFargatePublicStack
-cdk deploy mctcFargatePrivateStack
-
-cdk deploy mctcFargateAlbPublicStack
-cdk deploy mctcFargateAlbPrivatetack
-```
-
-# Attention
-
-If you deploy first a Vpc, then Fargate, then you destroy both, next time you have to clear the context by issueing:
-
-    cdk context  --clear 

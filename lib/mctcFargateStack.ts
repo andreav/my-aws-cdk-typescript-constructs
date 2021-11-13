@@ -17,7 +17,7 @@ export class mctcFargateStack extends cdk.Stack {
   protected vpc: ec2.IVpc;
   protected cluster: ecs.Cluster;
   protected taskDefinition: ecs.FargateTaskDefinition;
-  protected container: ecs.ContainerDefinition;
+  protected containerWeb: ecs.ContainerDefinition;
   protected serviceSecGrp: ec2.SecurityGroup;
   protected service: ecs.FargateService;
 
@@ -31,12 +31,12 @@ export class mctcFargateStack extends cdk.Stack {
 
     // Standard ECS service setup
     this.taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef');
-    this.container = this.taskDefinition.addContainer('web', {
+    this.containerWeb = this.taskDefinition.addContainer('web', {
       image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
       memoryLimitMiB: 256,
     });
 
-    this.container.addPortMappings({
+    this.containerWeb.addPortMappings({
       containerPort: 80,
       protocol: ecs.Protocol.TCP
     });
@@ -58,8 +58,12 @@ export class mctcFargateStack extends cdk.Stack {
       cluster: this.cluster,
       taskDefinition: this.taskDefinition,
       assignPublicIp: props?.fargateServiceSubnetType == SubnetType.PUBLIC ? true : false,
-      securityGroups: [this.serviceSecGrp],
+      securityGroups: [this.serviceSecGrp, ...this.fargateServiceExtraSecurityGroups()],
       desiredCount: props?.desiredCount
     });
+  }
+
+  protected fargateServiceExtraSecurityGroups(): ec2.SecurityGroup[] {
+    return []
   }
 }
