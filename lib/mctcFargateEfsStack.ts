@@ -49,27 +49,12 @@ export class mctcFargateEfsStack extends mctcFargateStack {
     }
 
     // Mount volume to conatainer
-    this.containerWeb.addMountPoints(this.mountPointConfig);
+    this.container.addMountPoints(this.mountPointConfig);
+
+    // Need to add permissions to and from the file system to the target,
+    // or else the task will timeout trying to mount the file system.
+    this.service.connections.allowFrom(fileSystem, ec2.Port.tcp(2049));
+    this.service.connections.allowTo(fileSystem, ec2.Port.tcp(2049));
   }
 
-  /*
-   * Add SSH access for testing purposes
-   */
-  fargateServiceExtraSecurityGroups(): ec2.SecurityGroup[] {
-
-    // opens port 22 on container
-    this.containerWeb.addPortMappings({
-      containerPort: 22
-    })
-
-    // allow access
-    const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroupFargateEfs_SSH', {
-      vpc: this.vpc,
-      description: 'Allow SSH (TCP port 22) in',
-      allowAllOutbound: true
-    });
-    securityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(22), 'Allow SSH Access')
-
-    return [securityGroup]
-  }
 }

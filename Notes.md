@@ -17,10 +17,20 @@ To test it is working:
 
 You will see the response from the server
 
+# Stack FargateEfsStack
+
+Key points:
+* use platform version 1.4
+* allow inbound and outbound communication on port 2049 (default for efs) between fargate service adnd efs
+  Otherwise task creation stops with error: 
+  
+  `ResourceInitializationError: failed to invoke EFS utils commands to set up EFS volumes: stderr: b'mount.nfs4: Connection timed out' : unsuccessful EFS utils command execution; code: 32) `
+
+
 
 # TODOs
 
-- [ ] Add Volume on EFS
+- [x] Add Volume on EFS
 - [ ] Add CloudMap example
 * Deploy mysql image  
 * Deploy phpmyadmin image ([here](https://hub.docker.com/_/phpmyadmin))

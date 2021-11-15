@@ -61,6 +61,17 @@ new mctcFargateEfsStack(app, 'mctcFargateEfsStack', {
   env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
   vpcName: "mctcVpcStack/Vpc",
   fargateServiceSubnetType: SubnetType.PUBLIC,
+
+  // an image allowing ssh connection
+  image: "hermsi/alpine-sshd",
+  containerEnv: {
+    "ROOT_LOGIN_UNLOCKED": "true",
+    "ROOT_PASSWORD": "root"
+  },
+  portMappings: [22],
+  securityGroups: [22],
+
   desiredCount: 2,
+
   mountPath: "/mount-efs"
 });

@@ -44,14 +44,16 @@
 
 * ## EFS - mctcFargateEfsStack
 
-    Two fargate tasks accessed only throught public IP  (no ALB)
-    They both share same EFS volume mounted at /mount-efs
-    For testing purposes, ssh access is added to the container (both port mapping and related security group)
+    Two fargate tasks accessed only throught public IP  (no ALB)  
+    They both share same EFS volume mounted at /mount-efs  
+    For testing purposes, an image with ssh access is used
     
-    * Connecting to port 22 of one replica
+    * Connecting to port 22 of one task  
+      `ssh root@<public_ip_1>  (pass: root)`
     * touch a file under /mount-efs
-    * connect two second replica
-    * ls /moun-efs and see the file created on the other file
+    * connect two second task:  
+      `ssh root@<public_ip_2>  (pass: root)`
+    * ls /moun-efs and see the file created on the other task
 
 
 
