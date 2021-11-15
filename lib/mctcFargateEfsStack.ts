@@ -8,10 +8,6 @@ import { RemovalPolicy } from '@aws-cdk/core';
 
 export interface mctcFargateEfsStackProps extends mctcFargateStackProps {
   mountPath: string;
-
-  // If sepcified, opens ssh 22 on fargate service
-  // Must be previuusly created from CLI
-  sshKeyPairName?: string;
 }
 
 export class mctcFargateEfsStack extends mctcFargateStack {
