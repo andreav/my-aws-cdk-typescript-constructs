@@ -4,6 +4,8 @@
 
   simply create a VPC across 2 AZ before launching other stacks (next stack will create faster)
 
+  &nbsp;
+
 * ## EC2 Public with SSH - mctcEc2PublicStack
 
   An EC2 instance taken from  [here](https://github.dev/aws-samples/aws-cdk-examples)
@@ -12,16 +14,23 @@
 
       ssh -i my-ssh-key.pem -o IdentitiesOnly=yes ec2-user@<ec2PublicIp>
   
+  &nbsp;
 * ## EC2 Private with SSH - mctcEc2PrivateStack
 
   An EC2 instance in the private subnet
 
+  &nbsp;
+* ## Nested Stack - mctcFargateNestedStack
 
+  This stack is used to simplyfy fargate creation and put focus only on the important differenes between stacks 
+
+  &nbsp;
 * ## FARGATE Public - mctcFargatePublicStack
   
   One fargate container with public access.
   After deploy, you can reach the container on the public ip at port 80
 
+  &nbsp;
 * ## FARGATE Private - mctcFargatePrivateStack
 
   Same as before, but not reachable from the outside  
@@ -29,12 +38,14 @@
   Useful for private usage (i.e. accessing the container only by a VPN)  
   For instance you can deploy a public EC2 and test reachability through curl once logged in by ssh
 
+  &nbsp;
 * ## ALB Public - mctcFargateAlbPublicStack
   
   Two fargate tasks accessed through ALB
   Tasks run in private network, reachable only through ALB, they have only private IP
   After deploy, you can reach the containers using the DNS name provided by the Alb
 
+  &nbsp;
 * ## ALB Private - mctcFargateAlbPrivatetack
   
   Two fargate tasks accessed through ALB
@@ -42,6 +53,7 @@
   After deploy, you can reach the containers using the DNS name provided by the ALB but not from the outside  
   For instance you can deploy a public EC2 and test reachability through curl once logged in by ssh
 
+  &nbsp;
 * ## EFS - mctcFargateEfsStack
 
     Two fargate tasks accessed only throught public IP  (no ALB)  
@@ -55,9 +67,24 @@
       `ssh root@<public_ip_2>  (pass: root)`
     * ls /moun-efs and see the file created on the other task
 
+  &nbsp;
+* ## Cloud Map (service discovery) - mctcFargateCloudMapStack
+
+    Two fargate services connected via cloudmap for service discovery
+    * first service: is phpmyadmin  
+      Exposed via public ip on port 80
+    * second service: mariadb  
+      in private network
+
+    phpmyadmin reaches mariadb service discovery by cloudmap
+
+    For testing purposes, cpnnect to public ip of first service and use test credential:
+    * user: root
+    * pawd: testrootpwd
 
 
 
+  &nbsp;
 # Deploy
 
 You can deploy first the mctcVpcStack and then any of the other stack (for faster testing)
@@ -77,6 +104,8 @@ cdk deploy mctcFargateAlbPublicStack
 cdk deploy mctcFargateAlbPrivatetack
 
 cdk deploy mctcFargateEfsStack
+
+cdk deploy mctcFargateCloudMapStack
 ```
 
 # Attention
@@ -134,5 +163,6 @@ npm install @aws-cdk/aws-ecs
 npm install @aws-cdk/aws-iam
 npm install @aws-cdk/aws-elasticloadbalancingv2
 npm install @aws-cdk/aws-efs
+npm install @aws-cdk/aws-servicediscovery
 ```
 

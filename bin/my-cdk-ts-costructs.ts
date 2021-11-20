@@ -2,12 +2,12 @@
 import 'source-map-support/register';
 import * as cdk from '@aws-cdk/core';
 import { mctcVpcStack } from '../lib/mctcVpcStack';
-import { mctcFargateStack } from '../lib/mctcFargateStack';
 import { mctcEc2Stack } from '../lib/mctcEc2Stack';
-import { Fn } from '@aws-cdk/core';
 import { SubnetType } from '@aws-cdk/aws-ec2';
+import { mctcFargateStack } from '../lib/mctcFargateStack';
 import { mctcFargateAlbStack } from '../lib/mctcFargateAlbStack';
 import { mctcFargateEfsStack } from '../lib/mctcFargateEfsStack';
+import { mctcFargateCloudMapStack } from '../lib/mctcFargateCloudMapStack';
 
 const app = new cdk.App();
 
@@ -32,13 +32,19 @@ new mctcEc2Stack(app, 'mctcEc2PrivateStack', {
 new mctcFargateStack(app, 'mctcFargatePublicStack', {
   env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
   vpcName: "mctcVpcStack/Vpc",
-  fargateServiceSubnetType: SubnetType.PUBLIC
+  fargateServiceSubnetType: SubnetType.PUBLIC,
+
+  portMappings: [[80]],
+  securityGroups: [80]
 });
 
 new mctcFargateStack(app, 'mctcFargatePrivateStack', {
   env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
   vpcName: "mctcVpcStack/Vpc",
-  fargateServiceSubnetType: SubnetType.PRIVATE_WITH_NAT
+  fargateServiceSubnetType: SubnetType.PRIVATE_WITH_NAT,
+  
+  portMappings: [[80]],
+  securityGroups: [80]
 });
 
 new mctcFargateAlbStack(app, 'mctcFargateAlbPublicStack', {
@@ -46,7 +52,10 @@ new mctcFargateAlbStack(app, 'mctcFargateAlbPublicStack', {
   vpcName: "mctcVpcStack/Vpc",
   fargateServiceSubnetType: SubnetType.PRIVATE_WITH_NAT,
   desiredCount: 2,
-  albSubnetType: SubnetType.PUBLIC
+  albSubnetType: SubnetType.PUBLIC,
+  
+  portMappings: [[80]],
+  securityGroups: [80]
 });
 
 new mctcFargateAlbStack(app, 'mctcFargateAlbPrivatetack', {
@@ -54,7 +63,10 @@ new mctcFargateAlbStack(app, 'mctcFargateAlbPrivatetack', {
   vpcName: "mctcVpcStack/Vpc",
   fargateServiceSubnetType: SubnetType.PRIVATE_WITH_NAT,
   desiredCount: 2,
-  albSubnetType: SubnetType.PRIVATE_WITH_NAT
+  albSubnetType: SubnetType.PRIVATE_WITH_NAT,
+  
+  portMappings: [[80]],
+  securityGroups: [80]
 });
 
 new mctcFargateEfsStack(app, 'mctcFargateEfsStack', {
@@ -68,10 +80,15 @@ new mctcFargateEfsStack(app, 'mctcFargateEfsStack', {
     "ROOT_LOGIN_UNLOCKED": "true",
     "ROOT_PASSWORD": "root"
   },
-  portMappings: [22],
+  portMappings: [[22]],
   securityGroups: [22],
 
   desiredCount: 2,
 
   mountPath: "/mount-efs"
+});
+
+new mctcFargateCloudMapStack(app, 'mctcFargateCloudMapStack', {
+  env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+  vpcName: "mctcVpcStack/Vpc",
 });

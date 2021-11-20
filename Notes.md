@@ -27,14 +27,15 @@ Key points:
   `ResourceInitializationError: failed to invoke EFS utils commands to set up EFS volumes: stderr: b'mount.nfs4: Connection timed out' : unsuccessful EFS utils command execution; code: 32) `
 
 
-
 # TODOs
 
 - [x] Add Volume on EFS
-- [ ] Add CloudMap example
-* Deploy mysql image  
-* Deploy phpmyadmin image ([here](https://hub.docker.com/_/phpmyadmin))
+- [x] Add CloudMap example
+  * Deploy mysql image  
+  * Deploy phpmyadmin image ([here](https://hub.docker.com/_/phpmyadmin))
 - [ ] Add ECR example
-* Create a repository
-* Build an image
-* Push an image
+  * Create a repository
+  * Build an image
+  * Push an image
+* [ ] Add pipeline example (building image from src code next )
+* [ ] Update a stack (see draining and replacing of containers, with min & max container availability)

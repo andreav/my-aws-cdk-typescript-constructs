@@ -3,23 +3,26 @@ import * as ec2 from "@aws-cdk/aws-ec2";
 import * as ecs from "@aws-cdk/aws-ecs";
 import * as efs from "@aws-cdk/aws-efs";
 import * as elbv2 from "@aws-cdk/aws-elasticloadbalancingv2";
-import { mctcFargateStack, mctcFargateStackProps } from './mctcFargateStack';
+import { mctcFargateStackProps } from './mctcFargateStack';
+import { mctcFargateNestedStack } from './mctcFargateNestedStack';
 import { RemovalPolicy } from '@aws-cdk/core';
 
 export interface mctcFargateEfsStackProps extends mctcFargateStackProps {
   mountPath: string;
 }
 
-export class mctcFargateEfsStack extends mctcFargateStack {
-  protected alb: elbv2.ApplicationLoadBalancer;
+export class mctcFargateEfsStack extends cdk.Stack {
   protected volumeConfig: ecs.Volume;
   protected mountPointConfig: ecs.MountPoint;
+  fargateStack: mctcFargateNestedStack;
 
   constructor(scope: cdk.Construct, id: string, props?: mctcFargateEfsStackProps) {
     super(scope, id, props);
 
+    this.fargateStack = new mctcFargateNestedStack(this, id, props);
+
     const fileSystem = new efs.FileSystem(this, 'FargateEfsFileSystem', {
-      vpc: this.vpc,
+      vpc: this.fargateStack.vpc,
       encrypted: true,
       removalPolicy: RemovalPolicy.DESTROY,
       // lifecyclePolicy: efs.LifecyclePolicy.AFTER_14_DAYS,
@@ -35,7 +38,7 @@ export class mctcFargateEfsStack extends mctcFargateStack {
     }
 
     // Add vvolume to task definition
-    this.taskDefinition.addVolume(this.volumeConfig)
+    this.fargateStack.taskDefinition.addVolume(this.volumeConfig)
 
     this.mountPointConfig =
     {
@@ -45,12 +48,12 @@ export class mctcFargateEfsStack extends mctcFargateStack {
     }
 
     // Mount volume to conatainer
-    this.container.addMountPoints(this.mountPointConfig);
+    this.fargateStack.container.addMountPoints(this.mountPointConfig);
 
     // Need to add permissions to and from the file system to the target,
     // or else the task will timeout trying to mount the file system.
-    this.service.connections.allowFrom(fileSystem, ec2.Port.tcp(2049));
-    this.service.connections.allowTo(fileSystem, ec2.Port.tcp(2049));
+    this.fargateStack.service.connections.allowFrom(fileSystem, ec2.Port.tcp(2049));
+    this.fargateStack.service.connections.allowTo(fileSystem, ec2.Port.tcp(2049));
   }
 
 }
