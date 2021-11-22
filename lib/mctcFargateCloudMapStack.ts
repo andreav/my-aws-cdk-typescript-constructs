@@ -58,13 +58,18 @@ export class mctcFargateCloudMapStack extends cdk.Stack {
     });
 
     // Register first service
+    // In case of a PublicDnsNamespace (not this case) this would be useful to register a WEIGHTED routing policy to perform blue/green deployments
+    // For simplicity in these stack we can access app container through public ip
     this.cloudMapService_app = new servicediscovery.Service(this, `ServiceDiscovery_app`, {
       namespace: this.cloudMapNamespace,
       dnsRecordType: servicediscovery.DnsRecordType.A,
       dnsTtl: cdk.Duration.seconds(60),
       name: 'appsrv', // will be used as a subdomain of the domain set in the namespace
+      
+      // If you want to specify WEIGHTED routing policy, must also specify loadBalancer = true
       routingPolicy: servicediscovery.RoutingPolicy.WEIGHTED,
       loadBalancer: true, // Important! If you choose WEIGHTED but don't set this, the routing policy will default to MULTIVALUE instead
+
       /*
        * Cannot specify `healthCheckConfig` for a Private DNS namespace.
        * Route 53 health checkers are public and they can only monitor hosts with IP addresses that are publicly routable on the internet
@@ -87,8 +92,8 @@ export class mctcFargateCloudMapStack extends cdk.Stack {
       dnsRecordType: servicediscovery.DnsRecordType.A,
       dnsTtl: cdk.Duration.seconds(60),
       name: 'dbsrv', // will be used as a subdomain of the domain set in the namespace
-      routingPolicy: servicediscovery.RoutingPolicy.WEIGHTED,
-      loadBalancer: true, // Important! If you choose WEIGHTED but don't set this, the routing policy will default to MULTIVALUE instead
+      // routingPolicy: servicediscovery.RoutingPolicy.WEIGHTED,
+      // loadBalancer: true, // Important! If you choose WEIGHTED but don't set this, the routing policy will default to MULTIVALUE instead
     })
 
     this.dbStack.service.associateCloudMapService({
