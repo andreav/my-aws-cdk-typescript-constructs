@@ -85,17 +85,18 @@
   &nbsp;
 * ## Update Fargate Service with code pipleline triggered by S3 upload
 
-    Trying to upload service image from CDK: upload the new image tag to S3.
-    S3 upload will trigger a pipeline which updates the cluster
-    S3 image must be a zipped file named `imagedefinitions.zip` containing an [imagedefinitions.json](https://docs.aws.amazon.com/codepipeline/latest/userguide/file-reference.html) file.
+    Trying to update service image from CDK: upload the new image tag to S3.
+    S3 upload will trigger a pipeline which updates the container image.
+    S3 file must be a zipped file named `imagedefinitions.zip` containing an [imagedefinitions.json](https://docs.aws.amazon.com/codepipeline/latest/userguide/file-reference.html) file.
 
-    * first deploy a vpc and a fargate stack
+    * first deploy a vpc and a fargate stack from this repo (for example mctcFargateAlbPublicStack)
       ```
       npx cdk deploy mctcVpcStack
-      npx cdk deploy mctcFargatePublicStack
+      npx cdk deploy mctcFargateAlbPublicStack
       ```
 
-    * Then deploy the update pipeline
+    * Then deploy the pipeline which will monitor the S3 bucket for imagedefinition changes.  
+      Remember to update stack properties `clusterName` and `serviceName` inside my-cdk-ts-constructs.ts according to your deploy. 
 
       ```
       npx cdk deploy mctcFargatePublicStack     
@@ -104,15 +105,14 @@
       * a bucket named: "pipeline-source-bucket"
       * a codepipeline responsible for updating the ECS Service when a new imagedefinition.json ois uploaded
     
-    * In the end create a zip file named `imagedefinitions.zip` containing a file named `imagedefinitions.json` with a valid format and upload it to previous bucket. The service will be updated.
+    * In the end create a zip file named `imagedefinitions.zip` containing a file named `imagedefinitions.json` with a valid format and upload it to previous bucket (this repo has one example file already in place). The container will be updated.
       ```
-      cd lib/update-fargate
-      zip imagedefinitions.zip imagedefinitions.json
-      aws s3 cp imagedefinitions.zip s3://pipeline-upload-bucket  # <-- bucket created when deploying codepipeline (tunable using stack prop)
+      aws s3 cp lib/update-fargate/imagedefinitions.zip s3://mctc-pipeline-upload-bucket  # <-- bucket created when deploying codepipeline (tunable using stack prop)
       ```
 
-      You will see two task under your cluster, the new `nginx/hello` running and responding from a new ip and the old `amazon/amazon-ecs-sample` in deprovisioning state (and no more responding)
-      After a while only the nginx task will survive
+      You will see four task under your cluster, two new `nginx/hello` running and responding from the load balancer and two draining `amazon/amazon-ecs-sample` in deprovisioning state.  
+      During draining timeout all four task respond. If you refresh the page, sometimes the new, sometimes the draining tasks will serve the request.  
+      After a while only two nginx task will survive
 
 
   &nbsp;
@@ -148,11 +148,6 @@ npx cdk deploy mctcFargateUpdateCodePipelineS3Stack
 If you deploy first a Vpc, then Fargate, then you destroy both, next time you have to clear the context by issueing:
 
     cdk context  --clear 
-
-If you want to destroy pipleine create by, you must first empty the bucket (not supported by standard cdk)
-
-    aws s3 rm s3://pipeline-upload-bucket  --recursive  # <-- bucket created when deploying mctcFargateUpdateCodePipelineS3Stack
-    npx cdk destroy mctcFargateUpdateCodePipelineS3Stack
 
 # Setup Development environment
 

@@ -5,43 +5,43 @@
     "eu-west-1c"
   ],
   "vpc-provider:account=403723480962:filter.tag:Name=mctcVpcStack/Vpc:region=eu-west-1:returnAsymmetricSubnets=true": {
-    "vpcId": "vpc-0eccc96ac6bda613f",
+    "vpcId": "vpc-04a8146e45204a76a",
     "vpcCidrBlock": "10.0.0.0/16",
     "availabilityZones": [],
     "subnetGroups": [
-      {
-        "name": "Private",
-        "type": "Private",
-        "subnets": [
-          {
-            "subnetId": "subnet-03ab53154a8d388cd",
-            "cidr": "10.0.128.0/18",
-            "availabilityZone": "eu-west-1a",
-            "routeTableId": "rtb-094241a1e497ecff3"
-          },
-          {
-            "subnetId": "subnet-0dd2d065e559bd939",
-            "cidr": "10.0.192.0/18",
-            "availabilityZone": "eu-west-1b",
-            "routeTableId": "rtb-0838b9221b4de3b06"
-          }
-        ]
-      },
       {
         "name": "Public",
         "type": "Public",
         "subnets": [
           {
-            "subnetId": "subnet-0f80335bd293b0734",
+            "subnetId": "subnet-0d1fcfa39666f78f8",
             "cidr": "10.0.0.0/18",
             "availabilityZone": "eu-west-1a",
-            "routeTableId": "rtb-0099d5ef4aca116b5"
+            "routeTableId": "rtb-0d8cbd31e61ddd7db"
           },
           {
-            "subnetId": "subnet-01c5b6073876ab980",
+            "subnetId": "subnet-03c5346c1bc0617ad",
             "cidr": "10.0.64.0/18",
             "availabilityZone": "eu-west-1b",
-            "routeTableId": "rtb-0d54e74ab75a4524b"
+            "routeTableId": "rtb-008f0d1990a627a9c"
+          }
+        ]
+      },
+      {
+        "name": "Private",
+        "type": "Private",
+        "subnets": [
+          {
+            "subnetId": "subnet-0e89095a3cec1fbcb",
+            "cidr": "10.0.128.0/18",
+            "availabilityZone": "eu-west-1a",
+            "routeTableId": "rtb-0b1e519b84d18f1f2"
+          },
+          {
+            "subnetId": "subnet-0a6ba40cb29007433",
+            "cidr": "10.0.192.0/18",
+            "availabilityZone": "eu-west-1b",
+            "routeTableId": "rtb-0e456b79adcf7480e"
           }
         ]
       }

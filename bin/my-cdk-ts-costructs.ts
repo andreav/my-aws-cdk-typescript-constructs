@@ -97,7 +97,7 @@ new mctcFargateCloudMapStack(app, 'mctcFargateCloudMapStack', {
 new mctcFargateUpdateCodePipelineS3Stack(app, 'mctcFargateUpdateCodePipelineS3Stack', {
   env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
   vpcName: "mctcVpcStack/Vpc",
-  fargateClusterName: "mctcFargatePublicStack-mctcFargatePublicStackNestedStackmctcFargatePublicStackNestedSt-5QBFQSCKP5T5-Ec2ClusterEE43E89D-dFceD9QMZNhu",
-  fargateServiceName: "mctcFargatePublicStack-mctcFargatePublicStackNestedStackmctcFargatePublicStackNestedSt-5QBFQSCKP5T5-ServiceD69D759B-6y3Ks6Pt8u85",
-  pipelineUploadBucketName: "pipeline-upload-bucket"
+  fargateClusterName: "mctcFargateAlbPublicStack-mctcFargateAlbPublicStackNestedStackmctcFargateAlbPublicStac-1VY52SIEDFC03-Ec2ClusterEE43E89D-C2Y3F4JJNYtL",
+  fargateServiceName: "mctcFargateAlbPublicStack-mctcFargateAlbPublicStackNestedStackmctcFargateAlbPublicStac-1VY52SIEDFC03-ServiceD69D759B-EqvtX9lv4eJZ",
+  pipelineUploadBucketName: "mctc-pipeline-upload-bucket"
 });

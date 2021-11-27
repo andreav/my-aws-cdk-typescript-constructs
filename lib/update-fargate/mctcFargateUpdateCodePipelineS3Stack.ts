@@ -57,7 +57,8 @@ export class mctcFargateUpdateCodePipelineS3Stack extends cdk.Stack {
       encryption: s3.BucketEncryption.KMS_MANAGED,
       publicReadAccess: false,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-      removalPolicy: cdk.RemovalPolicy.DESTROY
+      removalPolicy: cdk.RemovalPolicy.DESTROY, // destroy bucket when deleting stack 
+      autoDeleteObjects: true                   // automatically delete items before destroying bucket (otherwise stack destroy fails) 
     });
 
     new cdk.CfnOutput(this, `Bucket Name for uploads`, { value: this.pipelineSourceBucket.bucketName });

@@ -4,6 +4,7 @@ import * as elbv2 from "@aws-cdk/aws-elasticloadbalancingv2";
 import { IVpc, SubnetType } from '@aws-cdk/aws-ec2';
 import { mctcFargateNestedStack } from './mctcFargateNestedStack';
 import { mctcFargateStackProps } from './mctcFargateStack';
+import { Duration, Tags } from '@aws-cdk/core';
 
 export interface mctcFargateAlbStackProps extends mctcFargateStackProps {
   desiredCount: number;
@@ -37,11 +38,13 @@ export class mctcFargateAlbStack extends cdk.Stack {
       })],
       // include health check (default is none)
       healthCheck: {
-        interval: cdk.Duration.seconds(60),
+        interval: cdk.Duration.seconds(15),
         path: "/",
         timeout: cdk.Duration.seconds(5),
-      }
+      },
+      deregistrationDelay: Duration.seconds(30)   // faster updates from 300 to 30
     });
 
+    Tags.of(scope).add("stack-friendly-name", id)
   }
 }
