@@ -66,7 +66,7 @@ export class mctcFargateNestedStack extends cdk.NestedStack {
     // const securityGroups: number[] = props?.securityGroups ?? [80]
     if (props?.securityGroups) {
       this.serviceSecGrp = props.securityGroups.map(port => {
-        const name = `FargateAloneServiceSecurityGroup_${port}`
+        const name = `${id}SecurityGroup_${port}`
         const serviceSecGrp = new ec2.SecurityGroup(
           this,
           name,
@@ -91,22 +91,8 @@ export class mctcFargateNestedStack extends cdk.NestedStack {
       // mandatory for mounting EFS volumes
       platformVersion: FargatePlatformVersion.VERSION1_4
     });
+
+    new cdk.CfnOutput(this, `Fargate Cluster ARN`, { value: this.cluster.clusterArn });
+    new cdk.CfnOutput(this, `Fargate Service ARN`, { value: this.service.serviceArn });
   }
-
-  // // Utiltities
-  // protected Util_Allow_Port(port: number): ec2.SecurityGroup {
-  //   const name = `FargateAloneServiceSecurityGroup_${port}`
-  //   const serviceSecGrp = new ec2.SecurityGroup(
-  //     this,
-  //     name,
-  //     {
-  //       allowAllOutbound: true,
-  //       securityGroupName: name,
-  //       vpc: this.vpc,
-  //     }
-  //   );
-
-  //   serviceSecGrp.connections.allowFromAnyIpv4(ec2.Port.tcp(port));
-  //   return serviceSecGrp;
-  // }
 }

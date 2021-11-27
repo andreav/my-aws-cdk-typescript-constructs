@@ -1,0 +1,6 @@
+[
+  {
+    "name": "web",
+    "imageUri": "nginxdemos/hello"
+  }
+]

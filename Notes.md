@@ -26,6 +26,11 @@ Key points:
   
   `ResourceInitializationError: failed to invoke EFS utils commands to set up EFS volumes: stderr: b'mount.nfs4: Connection timed out' : unsuccessful EFS utils command execution; code: 32) `
 
+# CDK Update
+WHen strange typescript errors happen, try updating cdk.  
+find the new version, update all occurrences into package.json  
+npm install  
+and they could disappear
 
 # TODOs
 
@@ -37,5 +42,8 @@ Key points:
   * Create a repository
   * Build an image
   * Push an image
-* [ ] Add pipeline example (building image from src code next )
-* [ ] Update a stack (see draining and replacing of containers, with min & max container availability)
+  * Update ECS through pipeline 
+* [x] Add pipeline example triggered by s3 file upload updating imagedefinition
+* [ ] Add pipeline example (building image from src code. projet and infrastructure in the same repo)
+* [ ] Update a ECS task (see draining and replacing of containers, with min & max container availability)
+* [ ] Update a ECS Task through CLI
