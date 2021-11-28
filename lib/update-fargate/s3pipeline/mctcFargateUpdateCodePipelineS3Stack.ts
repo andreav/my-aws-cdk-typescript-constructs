@@ -3,7 +3,7 @@ import * as s3 from "@aws-cdk/aws-s3";
 import * as ecs from "@aws-cdk/aws-ecs";
 import * as codepipeline from "@aws-cdk/aws-codepipeline";
 import * as codepipeline_actions from "@aws-cdk/aws-codepipeline-actions";
-import { getOrCreateVpc } from '../utils';
+import { getOrCreateVpc } from '../../utils';
 
 var path = require('path');
 

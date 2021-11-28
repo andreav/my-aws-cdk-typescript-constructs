@@ -95,25 +95,47 @@
       npx cdk deploy mctcFargateAlbPublicStack
       ```
 
-    * Then deploy the pipeline which will monitor the S3 bucket for imagedefinition changes.  
-      Remember to update stack properties `clusterName` and `serviceName` inside my-cdk-ts-constructs.ts according to your deploy. 
+    * Then deploy the pipeline which will monitor the S3 bucket for imagedefinitions changes.  
 
       ```
       npx cdk deploy mctcFargatePublicStack     
       ```
       This will create:
       * a bucket named: "pipeline-source-bucket"
-      * a codepipeline responsible for updating the ECS Service when a new imagedefinition.json ois uploaded
-    
+      * a codepipeline responsible for updating the ECS Service when a new imagedefinitions.json is uploaded
+      
     * In the end create a zip file named `imagedefinitions.zip` containing a file named `imagedefinitions.json` with a valid format and upload it to previous bucket (this repo has one example file already in place). The container will be updated.
       ```
-      aws s3 cp lib/update-fargate/imagedefinitions.zip s3://mctc-pipeline-upload-bucket  # <-- bucket created when deploying codepipeline (tunable using stack prop)
+      aws s3 cp lib/update-fargate/s3pipeline/imagedefinitions.zip s3://mctc-pipeline-upload-bucket  # <-- bucket created when deploying codepipeline (tunable using stack prop)
       ```
 
       You will see four task under your cluster, two new `nginx/hello` running and responding from the load balancer and two draining `amazon/amazon-ecs-sample` in deprovisioning state.  
       During draining timeout all four task respond. If you refresh the page, sometimes the new, sometimes the draining tasks will serve the request.  
       After a while only two nginx task will survive
 
+  &nbsp;
+
+* ## Update Fargate Service by CLI
+
+    This is not properly a stack but is part of my test for updating a container image inside an ECS service.  
+    Credits to [acro5piano](https://github.com/acro5piano) on github [here](https://github.com/aws/aws-cli/issues/3064#issuecomment-817098886)
+    
+    * first deploy a vpc and a fargate stack from this repo (for example mctcFargateAlbPublicStack)
+      ```
+      npx cdk deploy mctcVpcStack
+      npx cdk deploy mctcFargateAlbPublicStack
+      ```
+
+    * Then run the update command 
+
+      ```
+      ./lib/update-fargate/cli/run_update.sh
+      ```
+
+      * This will crrate a new task definition from the existing one, update the image tag
+      * Then deploy the newly created task definition
+
+      From now on the behaviour is the same as the same of the S3 triggered code pipeline
 
   &nbsp;
 # Deploy
@@ -201,5 +223,6 @@ npm install @aws-cdk/aws-servicediscovery
 npm install @aws-cdk/aws-codepipeline
 npm install @aws-cdk/aws-codepipeline-actions
 npm install @aws-cdk/aws-s3
+npm install @aws-cdk/aws-ecr
 ```
 

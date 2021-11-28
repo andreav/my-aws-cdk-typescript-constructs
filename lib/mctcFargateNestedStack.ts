@@ -37,10 +37,15 @@ export class mctcFargateNestedStack extends cdk.NestedStack {
     this.vpc = getOrCreateVpc(this, props?.vpcName)
 
     // Cluster
-    this.cluster = new ecs.Cluster(this, 'Ec2Cluster', { vpc: this.vpc });
+    this.cluster = new ecs.Cluster(this, 'Ec2Cluster', {
+      vpc: this.vpc,
+      clusterName: `Cluster${id}`
+    });
 
     // Standard ECS service setup
-    this.taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef');
+    this.taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
+      family: `Task${id}`
+    });
 
     const imageName = props?.image ?? "amazon/amazon-ecs-sample"
     this.container = this.taskDefinition.addContainer('web', {
@@ -84,6 +89,7 @@ export class mctcFargateNestedStack extends cdk.NestedStack {
 
     this.service = new ecs.FargateService(this, "Service", {
       cluster: this.cluster,
+      serviceName: `Service${id}`,
       taskDefinition: this.taskDefinition,
       assignPublicIp: props?.fargateServiceSubnetType == SubnetType.PUBLIC ? true : false,
       securityGroups: this.serviceSecGrp,
