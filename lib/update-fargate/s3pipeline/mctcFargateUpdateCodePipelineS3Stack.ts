@@ -3,7 +3,7 @@ import * as s3 from "@aws-cdk/aws-s3";
 import * as ecs from "@aws-cdk/aws-ecs";
 import * as codepipeline from "@aws-cdk/aws-codepipeline";
 import * as codepipeline_actions from "@aws-cdk/aws-codepipeline-actions";
-import { getOrCreateVpc } from '../../utils';
+import { getFargateCluster, getFargateService, getOrCreateVpc } from '../../utils';
 
 var path = require('path');
 
@@ -29,24 +29,9 @@ export class mctcFargateUpdateCodePipelineS3Stack extends cdk.Stack {
      */
     const vpc = getOrCreateVpc(this, props?.vpcName)
 
-    const fargateCluster = ecs.Cluster.fromClusterAttributes(
-      this,
-      "FargateCluster",
-      {
-        vpc: vpc,
-        clusterName: props?.fargateClusterName ?? "MANDATORY_PROPERTY",
-        securityGroups: []
-      }
-    );
+    const fargateCluster = getFargateCluster(this, vpc, props?.fargateClusterName ?? "MANDATORY_fargateClusterName");
 
-    const fargateService = ecs.FargateService.fromFargateServiceAttributes(
-      this,
-      "FargateService",
-      {
-        cluster: fargateCluster,
-        serviceName: props?.fargateServiceName
-      }
-    );
+    const fargateService = getFargateService(this, fargateCluster, props?.fargateServiceName ?? "MANDATORY_fargateServiceName");
 
     /*
      * Create a bucket for uploading an imagedefinition.json and trigger a pipeline ecs update

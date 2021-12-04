@@ -132,10 +132,49 @@
       ./lib/update-fargate/cli/run_update.sh
       ```
 
-      * This will crrate a new task definition from the existing one, update the image tag
+      * This will create a new task definition from the existing one, update the image tag
       * Then deploy the newly created task definition
 
       From now on the behaviour is the same as the same of the S3 triggered code pipeline
+
+* ## Update Fargate Service when pushing a new image to ECR
+
+    This stack goes on updating a container into a Fargate cluster when a new image is pushed to an ECR repository.  
+    This is useful when you build the image outside the pipeline and just want an automatic "update on push" 
+    
+    * first deploy a vpc and a fargate stack from this repo (for example mctcFargatePublicStack)
+      ```
+      npx cdk deploy mctcVpcStack
+      npx cdk deploy mctcFargatePublicStack
+      ```
+
+    * Then deploy the pipeline watching an ECR repo with these steps:
+      * ECRSourceAction for triggering on push new image to ECR
+      * CodeBuildAction reading variables from previous step and building an `imagedefinitions.json` artifact
+      * ECSDeployAction accepting artifact from CodeBuildAction and updating fargate tasks according to imagedefinitions.json
+
+      ```
+      npx cdk deploy mctcFargateECRTriggetOnPush
+      ```
+
+    * Until now, pipeline has failed because no image is present into the repo.  
+      Now simulate a build&push using the script `build_and_push_image_to_ecr.sh`  
+      This script will first log into the ECR repository, then will build a fake image, tag it and push to ECR.
+
+      ```
+      ./lib/update-fargate/cli/run_update.sh
+      ```
+
+      Now the pipeline will trigger automatically again, receive infos through evironment variables about the new image, build the output artifact containing an imagedefinition, pass it to the last action which updates the containers.
+
+      From now on, this is similar to the "Update Fargate Service by CLI". The new image will de deployed.
+
+      Now, try isueing the build and push command again, another image will be pushed to the repo.  
+      If you visit the plblic IP of the container the page will change
+
+      ```
+      ./lib/update-fargate/cli/run_update.sh
+      ```
 
   &nbsp;
 # Deploy
@@ -163,6 +202,9 @@ npx cdk deploy mctcFargateCloudMapStack
 npx cdk deploy mctcFargateCloudMapStack
 
 npx cdk deploy mctcFargateUpdateCodePipelineS3Stack
+
+npx cdk deploy mctcFargateECRTriggetOnPushProps
+
 ```
 
 # Attention
@@ -170,6 +212,10 @@ npx cdk deploy mctcFargateUpdateCodePipelineS3Stack
 If you deploy first a Vpc, then Fargate, then you destroy both, next time you have to clear the context by issueing:
 
     cdk context  --clear 
+
+If you want to destroy stack, cdk still does not support destroying a no empty ECR repository. You can use CLI like this:
+
+    aws ecr delete-repository --repository-name mctc-repo --force
 
 # Setup Development environment
 
@@ -224,5 +270,6 @@ npm install @aws-cdk/aws-codepipeline
 npm install @aws-cdk/aws-codepipeline-actions
 npm install @aws-cdk/aws-s3
 npm install @aws-cdk/aws-ecr
+npm install @aws-cdk/aws-codebuild
 ```
 

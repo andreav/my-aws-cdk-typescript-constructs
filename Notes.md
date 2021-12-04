@@ -38,12 +38,11 @@ and they could disappear
 - [x] Add CloudMap example
   * Deploy mysql image  
   * Deploy phpmyadmin image ([here](https://hub.docker.com/_/phpmyadmin))
-- [ ] Add ECR example
+- [x] Add ECR example
   * Create a repository
   * Build an image
   * Push an image
   * Update ECS through pipeline 
 * [x] Add pipeline example triggered by s3 file upload updating imagedefinition
 * [ ] Add pipeline example (building image from src code. projet and infrastructure in the same repo)
-* [ ] Update a ECS task (see draining and replacing of containers, with min & max container availability)
-* [ ] Update a ECS Task through CLI
+* [x] Update a ECS Task through CLI

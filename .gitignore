@@ -6,3 +6,4 @@ node_modules
 # CDK asset staging directory
 .cdk.staging
 cdk.out
+lib/container-registry/ecr-trigger-on-push/passed.txt

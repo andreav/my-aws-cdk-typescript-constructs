@@ -1,5 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import * as ec2 from "@aws-cdk/aws-ec2";
+import * as ecs from "@aws-cdk/aws-ecs";
 
 export function getOrCreateVpc(stack: cdk.Stack, vpcName?: string): ec2.IVpc {
     let vpc: ec2.IVpc
@@ -11,4 +12,31 @@ export function getOrCreateVpc(stack: cdk.Stack, vpcName?: string): ec2.IVpc {
         vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
     }
     return vpc
+}
+
+export function getFargateCluster(stack: cdk.Stack, vpc: ec2.IVpc, clusterName: string): ecs.ICluster {
+    const fargateCluster = ecs.Cluster.fromClusterAttributes(
+        stack,
+        "FargateCluster",
+        {
+            vpc: vpc,
+            clusterName: clusterName,
+            securityGroups: []
+        }
+    );
+
+    return fargateCluster;
+}
+
+export function getFargateService(stack: cdk.Stack, fargateCluster: ecs.ICluster, serviceName: string): ecs.IBaseService {
+    const fargateService = ecs.FargateService.fromFargateServiceAttributes(
+        stack,
+        "FargateService",
+        {
+          cluster: fargateCluster,
+          serviceName: serviceName
+        }
+      );
+
+    return fargateService;
 }

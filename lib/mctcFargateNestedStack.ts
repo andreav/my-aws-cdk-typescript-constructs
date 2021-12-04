@@ -4,6 +4,7 @@ import * as ecs from "@aws-cdk/aws-ecs";
 import { getOrCreateVpc } from './utils';
 import { SubnetType } from '@aws-cdk/aws-ec2';
 import { FargatePlatformVersion } from '@aws-cdk/aws-ecs';
+import { ManagedPolicy } from '@aws-cdk/aws-iam';
 
 export interface mctcFargateNestedStackProps extends cdk.NestedStackProps {
   vpcName?: string;
@@ -46,6 +47,11 @@ export class mctcFargateNestedStack extends cdk.NestedStack {
     this.taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
       family: `Task${id}`
     });
+
+    // This policy is useful only for ECR demos, othewise can be removed/ignored
+    this.taskDefinition.obtainExecutionRole().addManagedPolicy({
+      managedPolicyArn: "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+    })
 
     const imageName = props?.image ?? "amazon/amazon-ecs-sample"
     this.container = this.taskDefinition.addContainer('web', {

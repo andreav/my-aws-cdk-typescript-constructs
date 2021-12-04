@@ -9,6 +9,7 @@ import { mctcFargateAlbStack } from '../lib/mctcFargateAlbStack';
 import { mctcFargateEfsStack } from '../lib/mctcFargateEfsStack';
 import { mctcFargateCloudMapStack } from '../lib/mctcFargateCloudMapStack';
 import { mctcFargateUpdateCodePipelineS3Stack } from '../lib/update-fargate/s3pipeline/mctcFargateUpdateCodePipelineS3Stack';
+import { mctcFargateECRTriggetOnPush } from '../lib/container-registry/ecr-trigger-on-push/mctcFargateEcrTriggetOnPush';
 
 const app = new cdk.App();
 
@@ -100,4 +101,11 @@ new mctcFargateUpdateCodePipelineS3Stack(app, 'mctcFargateUpdateCodePipelineS3St
   fargateClusterName: "ClustermctcFargateAlbPublicStack",
   fargateServiceName: "ServicemctcFargateAlbPublicStack",
   pipelineUploadBucketName: "mctc-pipeline-upload-bucket"
+});
+
+new mctcFargateECRTriggetOnPush(app, 'mctcFargateECRTriggetOnPush', {
+  env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+  vpcName: "mctcVpcStack/Vpc",
+  fargateClusterName: "ClustermctcFargatePublicStack",
+  fargateServiceName: "ServicemctcFargatePublicStack",
 });
