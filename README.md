@@ -239,6 +239,8 @@ npx cdk deploy mctcFargateUpdateCodePipelineS3Stack
 
 npx cdk deploy mctcFargateECRTriggetOnPushProps
 
+npx cdk deploy mctcFargateECRBuildStack
+
 ```
 
 # Attention
@@ -309,5 +311,6 @@ npm install @aws-cdk/aws-codepipeline-actions
 npm install @aws-cdk/aws-s3
 npm install @aws-cdk/aws-ecr
 npm install @aws-cdk/aws-codebuild
+npm install @aws-cdk/aws-codedeploy
 ```
 
