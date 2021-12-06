@@ -176,6 +176,40 @@
       ./lib/update-fargate/cli/run_update.sh
       ```
 
+* ## Update Fargate Service when pushing a new commit to CodeCommit Repository
+
+    Similar to prevous one,updating a container into a Fargate cluster when a new commit is pushed to a Code Commit repository.  
+    This is useful when you build the image ap part of the pipeline
+    
+    * first deploy a vpc and a fargate stack from this repo (for example mctcFargatePublicStack)
+      ```
+      npx cdk deploy mctcVpcStack
+      npx cdk deploy mctcFargatePublicStack
+      ```
+
+    * Then deploy the pipeline watching a Code Commit repo with these steps:
+      * CodeCommitSourceAction for triggering on push new commit to code commit
+      * CodeBuildAction reading variables from previous step and building an `imagedefinitions.json` artifact.
+      This time the `buildspec.yml` is stored inside the repo (not passed inline as in the previous stack) 
+      * ECSDeployAction accepting artifact from CodeBuildAction and updating fargate tasks according to `imagedefinitions.json`
+
+      ```
+      npx cdk deploy mctcFargateECRBuildStack
+      ```
+
+    * Clone the repository as shown in the output of the previous command and put the demo app in, then push.
+      ```
+      git clone https://git-codecommit.eu-west-1.amazonaws.com/v1/repos/mctcSourceRepo /tmp/mctcSourceRepo
+      cp ./lib/container-registry/ecr-with-build/app/* /tmp/mctcSourceRepo/
+      git -C /tmp/mctcSourceRepo add -A
+      git -C /tmp/mctcSourceRepo commit -m "first commtit"
+      git -C /tmp/mctcSourceRepo push origin -u master
+      ```
+      Note, be sure to have set up git credentials (see [here](https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-gc.html?icmpid=docs_acc_console_connect_np))
+
+    * The pipeline should start, first building the project, then pushing the new image to ECR, and deploying according to the artifact `imagedefinitions.json` your new image.  
+      If you now go to the new IP, you will see the the nginx app with a Welcome message and the commit hash from the source code
+
   &nbsp;
 # Deploy
 
@@ -216,6 +250,10 @@ If you deploy first a Vpc, then Fargate, then you destroy both, next time you ha
 If you want to destroy stack, cdk still does not support destroying a no empty ECR repository. You can use CLI like this:
 
     aws ecr delete-repository --repository-name mctc-repo --force
+
+If you need to bulk delete S3 buckets after many tries:
+
+    for bucket in $(aws s3 ls | awk '{print $3}' | grep my-pattern-here); do  aws s3 rb "s3://${bucket}" --force ; done
 
 # Setup Development environment
 

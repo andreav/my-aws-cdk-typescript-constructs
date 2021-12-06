@@ -86,7 +86,6 @@ export class mctcFargateECRTriggetOnPush extends cdk.Stack {
       })
     })
 
-    // const codebuildActionInputArtifact = new codepipeline.Artifact();
     const codebuildActionOutputArtifact = new codepipeline.Artifact();
     const codebuidAction = new codepipeline_actions.CodeBuildAction({
       actionName: 'codebuildAction',

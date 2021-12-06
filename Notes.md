@@ -27,10 +27,32 @@ Key points:
   `ResourceInitializationError: failed to invoke EFS utils commands to set up EFS volumes: stderr: b'mount.nfs4: Connection timed out' : unsuccessful EFS utils command execution; code: 32) `
 
 # CDK Update
-WHen strange typescript errors happen, try updating cdk.  
+When strange typescript errors happen, try updating cdk.  
 find the new version, update all occurrences into package.json  
 npm install  
 and they could disappear
+
+# IAM considerations
+* a role can be asseumed by someone
+* a role has policies (i.e. inline, managed)
+* a policy has statements stating: what action is allowed/denied on which resource
+
+If you do not specify nothing, CDK magically makes all for you  
+If you need more permissions, reference the entity role, usually you find a role property, and use any addManagedPolicy or addPolicy  
+Also you can use grantXXX to allow you to grant other resources access to that resource (`repository.grantPullPush`)  
+
+mctcFargateECRBuildStack example. We need to push/pull/login from codebuild action to ECR repository
+
+CDK simplifyies:
+
+* `ecrRepository.grantPullPush(codebuildProject.role!)`
+* If you inspect IAM, PipelineProject has access only to that repository
+
+Manually more complex:
+
+* Create role assumedBy 'codebuild.amazonaws.com' with managedPolicy: AmazonEC2ContainerRegistryPowerUser
+* Attach thet role to codebuild PipelineProject
+* If you inspect IAM, PipelineProject has access to all resources, still have to tune policy
 
 # TODOs
 
