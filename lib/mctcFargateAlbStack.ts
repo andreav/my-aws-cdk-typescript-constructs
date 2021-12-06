@@ -26,7 +26,10 @@ export class mctcFargateAlbStack extends cdk.Stack {
       vpc: this.fargateStack.vpc,
       internetFacing: props?.albSubnetType == SubnetType.PUBLIC ? true : false
     });
-    const listener = this.alb.addListener('PublicListener', { port: 80, open: true });
+    const listener = this.alb.addListener('PublicListener', {
+      port: 80,
+      open: true
+    });
 
     // Attach ALB to ECS Service
     listener.addTargets('ECS', {
@@ -44,7 +47,5 @@ export class mctcFargateAlbStack extends cdk.Stack {
       },
       deregistrationDelay: Duration.seconds(30)   // faster updates from 300 to 30
     });
-
-    Tags.of(scope).add("stack-friendly-name", id)
   }
 }
